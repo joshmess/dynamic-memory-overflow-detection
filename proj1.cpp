@@ -53,27 +53,13 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	int c =1;
 	for(unsigned int i=low;i<=up;i++){
-		cout << c << "[TAINTED] " << int2Hex(i) << endl;
+		//cout << c << "[TAINTED] " << int2Hex(i) << endl;
 		c++;
 		taintedBytes[i] = 1;
 	}
 
 }
 
-VOID printTaintedBytes(){
-	
-	int count = 1;	
-	unordered_map<unsigned int, unsigned int>::iterator i;
-	cout << "--------------------" << endl;
-	cout << "Tainted Bytes" << endl;
-	cout << "--------------------" << endl;
-	for(i = taintedBytes.begin();i != taintedBytes.end();i++){
-		if(i->second==1){
-			cout << count << "[" << int2Hex(i->first) << "]" << endl;
-			count ++;
-		}
-	}
-}
 
 typedef int ( *FP_FILENO )(FILE*);
 FP_FILENO org_fileno;
@@ -103,8 +89,9 @@ VOID fgetsTail(char* ret)
 		unsigned int lowerAddr = hex2Int(bufferBaseAddr);
 		unsigned int upperAddr = lowerAddr + fgets_length - 1;		
 		
-		addTaintedBytes(lowerAddr,upperAddr);		
-		//printTaintedBytes();	
+		addTaintedBytes(lowerAddr,upperAddr);	
+
+	
 	}
 	fgets_stdin = false;
 }
@@ -132,7 +119,7 @@ VOID getsTail(char* dest)
 	unsigned int upperAddr = lowerAddr + strlen(dest) - 1;		
 	
 	addTaintedBytes(lowerAddr,upperAddr);
-	//printTaintedBytes();	
+		
 }
 
 VOID mainHead(int argc, char** argv)
@@ -148,13 +135,31 @@ VOID mainHead(int argc, char** argv)
 		upperAddr = lowerAddr + strlen(argv[i]) - 1;
 		
 		addTaintedBytes(lowerAddr,upperAddr);
-		//printTaintedBytes();
+		
 	}
 }
 
 VOID strcpyHead(char* dest, char* src)
 {
+	
+	char srcAddrArr[32];
+       	sprintf(srcAddrArr,"%p",src);
+       	string srcAddr = srcAddrArr;
 
+	// check if src bytes are tainted
+	if(taintedBytes[hex2Int(srcAddr)]==1){	// src is tainted
+		//mark dest as tainted as well
+		char destAddrArr[32];
+		sprintf(destAddrArr,"%p",dest);
+		string destAddr = destAddrArr;
+		
+		unsigned int destLower = hex2Int(destAddr);
+		unsigned int destUpper = destLower + strlen(dest) - 1;
+		
+		//cout << "STRCPY: Marking dest bytes as tainted***" << endl;
+		addTaintedBytes(destLower,destUpper);
+				
+	}
 }
 
 VOID bzeroHead(void* dest, int n)
