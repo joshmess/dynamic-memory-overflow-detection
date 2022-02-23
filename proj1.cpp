@@ -4,7 +4,8 @@
 #include <stack>
 #include <string.h>
 #include <string>
-
+#include <unordered_map>
+#include <bits/stdc++.h>
 
 #define MAIN "main"
 #define FILENO "fileno"
@@ -25,32 +26,53 @@
 #define MEMSET "memset@plt"
 
 using namespace std;
+using namespace tr1;
 
-// Data structures for tracking tainted memory
+// Hashtable to track tainted bytes
+unordered_map<unsigned int,unsigned int> taintedBytes;
 
-// Maintain size and address of tainted bytes
-struct tableRecord{
-	string baseAddress;
-	size_t size;
-};
+string int2Hex(unsigned int i){
 
+	stringstream stream;
+  	stream << "0x" << std::setfill ('0') << std::setw(sizeof(unsigned int)*2) << std::hex << i;
+  	return stream.str();
+	
+}
 
-// Actual tables to track tainted bytes
-vector<tableRecord> bytesTainted;
+unsigned int hex2Int(string hexStr){
 
+	unsigned int toRet;
+	stringstream stream;
+	stream << std::hex << hexStr;
+	stream >> toRet;
+	return toRet;
+
+}
+
+VOID addTaintedBytes(unsigned int low, unsigned int up){
+
+	int c =1;
+	for(unsigned int i=low;i<=up;i++){
+		cout << c << "[TAINTED] " << int2Hex(i) << endl;
+		c++;
+		taintedBytes[i] = 1;
+	}
+
+}
 
 VOID printTaintedBytes(){
 	
-	cout << "---------------------------------" << endl;
-	cout << "Tainted Bytes: " << endl;
-	vector<tableRecord>::iterator i;
-
-	for(i=bytesTainted.begin();i!=bytesTainted.end();i++){
-		
-		cout << "Base Address:" << i->baseAddress << " Size " << i->size << endl;
+	int count = 1;	
+	unordered_map<unsigned int, unsigned int>::iterator i;
+	cout << "--------------------" << endl;
+	cout << "Tainted Bytes" << endl;
+	cout << "--------------------" << endl;
+	for(i = taintedBytes.begin();i != taintedBytes.end();i++){
+		if(i->second==1){
+			cout << count << "[" << int2Hex(i->first) << "]" << endl;
+			count ++;
+		}
 	}
-	cout << "---------------------------------" << endl;
-
 }
 
 typedef int ( *FP_FILENO )(FILE*);
@@ -69,20 +91,21 @@ bool isStdin(FILE *fd)
 }
 
 bool fgets_stdin = false;
-size_t numBytes = 0;
+size_t fgets_length = 0;
 VOID fgetsTail(char* ret)
 {
-	// cout << "SIZE: " << numBytes << endl;
 	if(fgets_stdin) {
-		printf("fgetsTail: ret %p\n", ret);
-		// Get base address of buffer
-		char baseAddress[32];
-		sprintf(baseAddress,"%p",ret);
-		string bufferBaseAddr = baseAddress;
-		// Add a new record to bytesTainted
-		tableRecord toAdd = {bufferBaseAddr,numBytes};
-		bytesTainted.push_back(toAdd);
-		printTaintedBytes();
+
+		// Get base address as string
+        	char baseAddress[32];
+        	sprintf(baseAddress,"%p",ret);
+        	string bufferBaseAddr = baseAddress;
+		cout << "LOW1: " << bufferBaseAddr << endl;
+		unsigned int lowerAddr = hex2Int(bufferBaseAddr);
+		unsigned int upperAddr = lowerAddr + fgets_length - 1;		
+		
+		addTaintedBytes(lowerAddr,upperAddr);		
+		//printTaintedBytes();	
 	}
 	fgets_stdin = false;
 }
@@ -92,7 +115,7 @@ VOID fgetsHead(char* dest, int size, FILE *stream)
 	if(isStdin(stream)){	//detects whether src is sdtin
 		printf("fgetsHead: dest %p, size %d, stream: stdin)\n", dest, size);
 		fgets_stdin = true;
-		numBytes = size;
+		fgets_length = size;
 	} 
 }
 
@@ -100,27 +123,15 @@ VOID getsTail(char* dest)
 {
 	printf("getsTail: dest %p\n", dest);
 	printf("size of dest: %d\n", strlen(dest));
-	// Get base address of buffer
-        char baseAddress[32];
-        sprintf(baseAddress,"%p",dest);
-        string bufferBaseAddr = baseAddress;
-         // Add a new record to bytesTainted
-	tableRecord toAdd = {bufferBaseAddr,strlen(dest)};
-	bytesTainted.push_back(toAdd);
-	printTaintedBytes();
+
+	
+	
 	
 }
 
 VOID mainHead(int argc, char** argv)
 {
-	for(int i=1;i<argc;i++){
-		char baseAddress[32];
-		sprintf(baseAddress,"%p",argv[i]);
-		string bufferBaseAddr = baseAddress;
-		tableRecord toAdd = {bufferBaseAddr,strlen(argv[i])};
-		bytesTainted.push_back(toAdd);
-		printTaintedBytes();
-	}
+	
 }
 
 VOID strcpyHead(char* dest, char* src)
