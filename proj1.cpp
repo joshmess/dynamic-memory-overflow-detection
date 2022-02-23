@@ -100,7 +100,6 @@ VOID fgetsTail(char* ret)
         	char baseAddress[32];
         	sprintf(baseAddress,"%p",ret);
         	string bufferBaseAddr = baseAddress;
-		cout << "LOW1: " << bufferBaseAddr << endl;
 		unsigned int lowerAddr = hex2Int(bufferBaseAddr);
 		unsigned int upperAddr = lowerAddr + fgets_length - 1;		
 		
@@ -124,14 +123,33 @@ VOID getsTail(char* dest)
 	printf("getsTail: dest %p\n", dest);
 	printf("size of dest: %d\n", strlen(dest));
 
+	// Get base address as string
+       	char baseAddress[32];
+       	sprintf(baseAddress,"%p",dest);
+       	string bufferBaseAddr = baseAddress;
 	
+	unsigned int lowerAddr = hex2Int(bufferBaseAddr);
+	unsigned int upperAddr = lowerAddr + strlen(dest) - 1;		
 	
-	
+	addTaintedBytes(lowerAddr,upperAddr);
+	//printTaintedBytes();	
 }
 
 VOID mainHead(int argc, char** argv)
 {
-	
+	for(int i=1;i<argc;i++){
+		unsigned int lowerAddr, upperAddr;
+
+		char baseAddress[32];
+        	sprintf(baseAddress,"%p",argv[i]);
+        	string bufferBaseAddr = baseAddress;
+
+		lowerAddr = hex2Int(bufferBaseAddr);
+		upperAddr = lowerAddr + strlen(argv[i]) - 1;
+		
+		addTaintedBytes(lowerAddr,upperAddr);
+		//printTaintedBytes();
+	}
 }
 
 VOID strcpyHead(char* dest, char* src)

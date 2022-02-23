@@ -2,6 +2,10 @@
 
 ### Part 1: Mark user input as tainted (20%)
 
+- Marked tainted bytes from fgets via stdin.
+- Marked tainted bytes from gets.
+- Marked tainted bytes from command line (byte numbers look a little off).
+
 ### Part 2: Track how tainted data propagates (20%)
 
 ### Part 3: Detect if tainted data is used as return address (20%)
