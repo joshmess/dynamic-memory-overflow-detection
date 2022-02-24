@@ -158,13 +158,13 @@ VOID strcpyHead(char* dest, char* src)
 	sprintf(destAddrArr,"%p",dest);
 	string destAddr = destAddrArr;
 
-	unordered_map<unsigned int, unsigned int>::iterator it;
 	//current src and dest bytes we are evaluating
 	unsigned int currentSrc = hex2Int(srcAddr);
-
+	//calculate offset
+	unsigned int endSrc = currentSrc + strlen(src) - 1;
 	unsigned int currentDest = hex2Int(destAddr);
 
-	for(it=taintedBytes.begin();it!=taintedBytes.end();it++){
+	for(unsigned int i = currentSrc; i<=endSrc; i++){
 
 
 		// check if src bytes are tainted
@@ -191,28 +191,21 @@ VOID strncpyHead(char* dest, char* src, int n)
         sprintf(destAddrArr,"%p",dest);
         string destAddr = destAddrArr;
 
-        unordered_map<unsigned int, unsigned int>::iterator it;
         //current src and dest bytes we are evaluating
         unsigned int currentSrc = hex2Int(srcAddr);
         unsigned int currentDest = hex2Int(destAddr);
 
-	// counter to make sure we don't copy more than n bytes	
-	int counter = 0;
+	unsigned int currentSrcConstant = currentSrc;
 
-	for(it=taintedBytes.begin();it!=taintedBytes.end();it++){
-
-		// exit if n is reached
-		if(counter >= n){
-			break;
-		}		
+	//only need to check first n bytes
+	for(unsigned int i = currentSrc; i<=currentSrcConstant+n;i++){
 
                 // check if src bytes are tainted
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
-			cout << counter << "STRNCPY Tainted Byte: " << int2Hex(currentDest) << endl;
+			//cout << "STRNCPY Tainted Byte: " << int2Hex(currentDest) << endl;
                         taintedBytes[currentDest] = 1;
                 }
-		counter++;
                 currentSrc++;
                 currentDest++;
         }
@@ -229,13 +222,15 @@ VOID strcatHead(char* dest, char* src)
         sprintf(destAddrArr,"%p",dest);
         string destAddr = destAddrArr;
 
-        unordered_map<unsigned int, unsigned int>::iterator it;
         //current src and dest bytes we are evaluating
         unsigned int currentSrc = hex2Int(srcAddr);
-        unsigned int currentDest = hex2Int(destAddr);
+	//start at end of dest since strcat appends
+        unsigned int currentDest = hex2Int(destAddr) + strlen(dest);
 
-	for(it=taintedBytes.begin();it!=taintedBytes.end();it++){
+	//calculate offset
+	unsigned int endSrc = currentSrc + strlen(src) - 1;
 
+	for(unsigned int i = currentSrc;i<=endSrc;i++){
         	// check if src bytes are tainted
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
@@ -258,23 +253,19 @@ VOID strncatHead(char* dest, char*src, int n)
         sprintf(destAddrArr,"%p",dest);
         string destAddr = destAddrArr;
 
-        unordered_map<unsigned int, unsigned int>::iterator it;
+     
         //current src and dest bytes we are evaluating
         unsigned int currentSrc = hex2Int(srcAddr);
-        unsigned int currentDest = hex2Int(destAddr);
+        unsigned int currentDest = hex2Int(destAddr) + strlen(dest);
 
-	//dont concatenate more than n bytes
-	int counter = 0;	
+	unsigned int currentSrcConstant = currentSrc;
+	//only concats first n bytes
+        for(unsigned int i = currentSrc;i<=currentSrcConstant+n;i++){
 
-        for(it=taintedBytes.begin();it!=taintedBytes.end();it++){
-
-		if(counter >= n){
-			break;
-		}
                 // check if src bytes are tainted
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
-                        cout << counter << "STRNCAT Tainted Byte: " << int2Hex(currentDest) << endl;
+                        cout << "STRNCAT Tainted Byte: " << int2Hex(currentDest) << endl;
                         taintedBytes[currentDest] = 1;
                 }
                 currentSrc++;
