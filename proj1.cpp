@@ -53,7 +53,7 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	int c =1;
 	for(unsigned int i=low;i<=up;i++){
-		//cout << c << "[TAINTED] " << int2Hex(i) << endl;
+	//	cout << c << "[TAINTED] " << int2Hex(i) << endl;
 		c++;
 		taintedBytes[i] = 1;
 	}
@@ -130,7 +130,8 @@ VOID getsTail(char* dest)
 // Analysis Routine for command-line args
 VOID mainHead(int argc, char** argv)
 {
-	for(int i=1;i<argc;i++){
+	for(int i=0;i<argc;i++){
+		
 		unsigned int lowerAddr, upperAddr;
 
 		char baseAddress[32];
@@ -148,7 +149,6 @@ VOID mainHead(int argc, char** argv)
 // Analysis Routine for strcpy
 VOID strcpyHead(char* dest, char* src)
 {
-	//cout << "IN STRCPY" << endl;
 	// get addresses for src and dest
 	char srcAddrArr[32];
        	sprintf(srcAddrArr,"%p",src);
@@ -158,19 +158,16 @@ VOID strcpyHead(char* dest, char* src)
 	sprintf(destAddrArr,"%p",dest);
 	string destAddr = destAddrArr;
 
-	//current src and dest bytes we are evaluating
+
 	unsigned int currentSrc = hex2Int(srcAddr);
-	//calculate offset
 	unsigned int endSrc = currentSrc + strlen(src) - 1;
 	unsigned int currentDest = hex2Int(destAddr);
-
+	
 	for(unsigned int i = currentSrc; i<=endSrc; i++){
-
 
 		// check if src bytes are tainted
 		if(taintedBytes[currentSrc]==1){	// src is tainted
 			//mark corresponding dest byte as tainted
-			//cout << "STRCPY Tainted Byte SRC: " << int2Hex(currentSrc) << " DEST: " << int2Hex(currentDest) << endl;
 			taintedBytes[currentDest] = 1;
 		}	
 		currentSrc++;
@@ -195,25 +192,25 @@ VOID strncpyHead(char* dest, char* src, int n)
         unsigned int currentSrc = hex2Int(srcAddr);
         unsigned int currentDest = hex2Int(destAddr);
 
-	unsigned int currentSrcConstant = currentSrc;
+	unsigned int startingSrc = currentSrc;
 
 	//only need to check first n bytes
-	for(unsigned int i = currentSrc; i<=currentSrcConstant+n;i++){
-
+	for(unsigned int i = currentSrc; i<startingSrc+n;i++){
+		
                 // check if src bytes are tainted
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
-			//cout << "STRNCPY Tainted Byte: " << int2Hex(currentDest) << endl;
-                        taintedBytes[currentDest] = 1;
+			taintedBytes[currentDest] = 1;
                 }
                 currentSrc++;
                 currentDest++;
         }
 }
 
+// Analysis Routine for strcat
 VOID strcatHead(char* dest, char* src)
 {
-	//cout << "IN STRCAT" << endl;
+	//get src and dest addr
 	char srcAddrArr[32];
         sprintf(srcAddrArr,"%p",src);
         string srcAddr = srcAddrArr;
@@ -234,7 +231,6 @@ VOID strcatHead(char* dest, char* src)
         	// check if src bytes are tainted
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
-                        cout << "STRNCAT Tainted Byte: " << int2Hex(currentDest) << endl;
                         taintedBytes[currentDest] = 1;
                 }
                 currentSrc++;
@@ -242,9 +238,9 @@ VOID strcatHead(char* dest, char* src)
         }	
 }
 
+// Analysis Routine for strncat
 VOID strncatHead(char* dest, char*src, int n)
 {
-	//cout << "IN STRNCAT" << endl;	
 	char srcAddrArr[32];
         sprintf(srcAddrArr,"%p",src);
         string srcAddr = srcAddrArr;
@@ -258,14 +254,13 @@ VOID strncatHead(char* dest, char*src, int n)
         unsigned int currentSrc = hex2Int(srcAddr);
         unsigned int currentDest = hex2Int(destAddr) + strlen(dest);
 
-	unsigned int currentSrcConstant = currentSrc;
+	unsigned int startingSrc = currentSrc;
 	//only concats first n bytes
-        for(unsigned int i = currentSrc;i<=currentSrcConstant+n;i++){
+        for(unsigned int i = currentSrc;i<startingSrc+n;i++){
 
                 // check if src bytes are tainted
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
-                        cout << "STRNCAT Tainted Byte: " << int2Hex(currentDest) << endl;
                         taintedBytes[currentDest] = 1;
                 }
                 currentSrc++;
@@ -274,14 +269,67 @@ VOID strncatHead(char* dest, char*src, int n)
 
 }
 
+// Analysis Routine for memcpy
 VOID memcpyHead(char* dest, char* src, int n)
 {
-	//cout << "IN MEMCPY" << endl;
+	char srcAddrArr[32];
+        sprintf(srcAddrArr,"%p",src);
+        string srcAddr = srcAddrArr;
+
+        char destAddrArr[32];
+        sprintf(destAddrArr,"%p",dest);
+        string destAddr = destAddrArr;
+
+	unsigned int currentSrc = hex2Int(srcAddr);
+	unsigned int currentDest = hex2Int(destAddr);
+	unsigned int startingSrc = currentSrc;
+
+	for(unsigned int i = currentSrc;i<startingSrc+n;i++){
+		
+		//check is src byte is tainted
+		if(taintedBytes[currentSrc]==1){
+			//mark corresponding dest byte
+			taintedBytes[currentDest] = 1;
+		}
+		currentSrc++;
+		currentDest++;
+	}
 }
 
+// Anaylsis Routine for bzero
 VOID bzeroHead(void* dest, int n)
 {
-	//cout << "IN BZERO" << endl;
+	char destAddrArr[32];
+	sprintf(destAddrArr,"%p",dest);
+	string destAddr = destAddrArr;
+
+	unsigned int startErase = hex2Int(destAddr);
+	unsigned int startEraseConst = startErase;
+
+	for(unsigned int i=startErase;i<startEraseConst+n;i++){
+		// clear marked byte which is getting overwritten
+		taintedBytes[startErase] = 0;
+		startErase++;
+	}
+}
+
+// Analysis Routine for memset
+VOID memsetHead(void* dest, int c, size_t n)
+{
+	char destAddrArr[32];
+        sprintf(destAddrArr,"%p",dest);
+        string destAddr = destAddrArr;
+
+        unsigned int startErase = hex2Int(destAddr);
+        unsigned int startEraseConst = startErase;
+
+        for(unsigned int i=startErase;i<startEraseConst+n;i++){
+                // clear marked byte which is getting overwritten
+		if(taintedBytes[startErase] == 1){
+			taintedBytes[startErase] = 0;
+                	startErase++;
+		}
+        }
 }
 
 
@@ -378,6 +426,18 @@ VOID Image(IMG img, VOID *v) {
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
 		IARG_END);
 			RTN_Close(rtn);
+	}
+
+	rtn = RTN_FindByName(img, MEMSET);
+	if(RTN_Valid(rtn)) {
+		RTN_Open(rtn);
+		RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)memsetHead,
+			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
+			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
+			IARG_FUNCARG_ENTRYPOINT_VALUE, 2,
+			IARG_INST_PTR,
+		IARG_END);
+		RTN_Close(rtn);
 	}
 
 	rtn = RTN_FindByName(img, MAIN);
