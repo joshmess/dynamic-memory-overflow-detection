@@ -1,3 +1,9 @@
+/*
+Author: Josh Messitte
+CSCI 8240: SW Security & Cyber Forensics
+Dynamic Memory Overflow Detection Using Taint Analysis
+*/
+
 #include "pin.H"
 #include <iostream>
 #include <vector>
