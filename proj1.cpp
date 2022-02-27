@@ -393,7 +393,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		int num = 0;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
-			cout << "Stack " << num << ": History of Mem("<<i->first<<"):" << i->second << endl;
+			cout << "Stack " << num << ": History of Mem("<<int2Hex(i->first)<<"):" << i->second << endl;
 			num++;
 		}
 		cout << "*********************************************************" << endl;
