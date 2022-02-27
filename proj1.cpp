@@ -89,7 +89,7 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	for(unsigned int i=low;i<=up;i++){
 		taintedBytes[i] = 1;
-		stackTraces[i] = getStackTrace();
+		//stackTraces[i] = getStackTrace();
 	}
 
 }
@@ -394,6 +394,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		int num = 0;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
 			cout << "Stack " << num << ": History of Mem("<<i->first<<"):" << i->second << endl;
+			num++;
 		}
 		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
