@@ -20,6 +20,6 @@
 
 - Detected if tainted data is used in an instruction which changes the control flow of the program.
 
-### Part 4: Store stack traces for each tainted bytes (30%)
+### Part 4: Store stack traces for each tainted byte (30%)
 
 ### Part 5: Detail the limitations of the project (10%)

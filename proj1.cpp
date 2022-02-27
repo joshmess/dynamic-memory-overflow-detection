@@ -59,7 +59,7 @@ string getStackTrace(){
 	}
 	reverseStack.pop_back();
 	for(vector<string>::iterator i=reverseStack.end()-1; i >= reverseStack.begin();i--){
-		toReturn += *i + " ";
+		toReturn += *i + ", ";
 	}
 	return toReturn;	
 }
@@ -89,7 +89,7 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	for(unsigned int i=low;i<=up;i++){
 		taintedBytes[i] = 1;
-		//stackTraces[i] = getStackTrace();
+		stackTraces[i] = getStackTrace();
 	}
 
 }
@@ -393,8 +393,10 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		int num = 0;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
-			cout << "Stack " << num << ": History of Mem("<<int2Hex(i->first)<<"):" << i->second << endl;
-			num++;
+			if(memAddr == int2Hex(i->first)){
+				cout << "Stack " << num << ": History of Mem("<<int2Hex(i->first)<<"):" << i->second << endl;
+				num++;
+			}
 		}
 		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
@@ -422,6 +424,7 @@ bool isMainExecutableIMG(ADDRINT addr)
     return false;
 }
 
+// Function call, push to stack
 VOID functionCall(ADDRINT funcAddr){
 
 	if(isMainExecutableIMG(funcAddr))
@@ -430,6 +433,7 @@ VOID functionCall(ADDRINT funcAddr){
 	}
 }
 
+// Return, pop from stack
 VOID returnInstruction(ADDRINT funcAddr,ADDRINT target){
 
 	if(isMainExecutableIMG(target))
