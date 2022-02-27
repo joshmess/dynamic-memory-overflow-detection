@@ -16,27 +16,55 @@ Dynamic Memory Overflow Detection Using Taint Analysis
 #define MAIN "main"
 #define FILENO "fileno"
 
-// Taint the memory if the source of input is stdin
 #define FGETS "fgets"
 #define GETS "gets"
 
-// Propagate if the src is tainted
 #define STRCPY "strcpy@plt"
 #define STRNCPY "strncpy@plt"
 #define STRCAT "strcat@plt"
 #define STRNCAT "strncat@plt"
 #define MEMCPY "memcpy@plt"
 
-// Reset tainted memory
 #define BZERO "bzero@plt"
 #define MEMSET "memset@plt"
 
 using namespace std;
 using namespace tr1;
 
-// Hashtable to track tainted bytes
+// Hashmap to track tainted bytes
 unordered_map<unsigned int,unsigned int> taintedBytes;
 
+// Data structures to keep track of stack traces too
+unordered_map<unsigned int, string> stackTraces;
+stack<string> fncStk;
+
+// Push back stack with new function address
+void pushFncAddr(ADDRINT fnc){
+
+	char fncAddrArr[32];
+	sprintf(fncAddrArr,"0x%x",fnc);
+	string fncAddr = fncAddrArr;
+	fncStk.push(fncAddr);
+
+}
+
+// Return a string for the current stack
+string getStackTrace(){
+
+	string toReturn = "";
+	vector<string> reverseStack;
+
+	for(stack<string> tmp = fncStk; !tmp.empty(); tmp.pop()){
+		reverseStack.push_back(tmp.top());
+	}
+	reverseStack.pop_back();
+	for(vector<string>::iterator i=reverseStack.end()-1; i >= reverseStack.begin();i--){
+		toReturn += *i + " "
+	}
+	return toReturn;	
+}
+
+// Convert unsigned int to hex string
 string int2Hex(unsigned int i){
 
 	stringstream stream;
@@ -45,6 +73,7 @@ string int2Hex(unsigned int i){
 	
 }
 
+// Convert hex string to unsigned int
 unsigned int hex2Int(string hexStr){
 
 	unsigned int toRet;
@@ -55,13 +84,12 @@ unsigned int hex2Int(string hexStr){
 
 }
 
+// Add tainted bytes from low:up to hashmap
 VOID addTaintedBytes(unsigned int low, unsigned int up){
 
-	int c =1;
 	for(unsigned int i=low;i<=up;i++){
-		//cout << c << "[TAINTED] " << int2Hex(i) << endl;
-		c++;
 		taintedBytes[i] = 1;
+		stackTraces[i] = getStackTrace();
 	}
 
 }
@@ -175,6 +203,7 @@ VOID strcpyHead(char* dest, char* src)
 		if(taintedBytes[currentSrc]==1){	// src is tainted
 			//mark corresponding dest byte as tainted
 			taintedBytes[currentDest] = 1;
+			stackTraces[currentDest] = getStackTrace();
 		}	
 		currentSrc++;
 		currentDest++;
@@ -206,7 +235,8 @@ VOID strncpyHead(char* dest, char* src, int n)
                 // check if src bytes are tainted
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
-			taintedBytes[currentDest] = 1;
+						taintedBytes[currentDest] = 1;
+						stackTraces[currentDest] = getStackTrace();
                 }
                 currentSrc++;
                 currentDest++;
@@ -238,6 +268,7 @@ VOID strcatHead(char* dest, char* src)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
+						stackTraces[currentDest] = getStackTrace();
                 }
                 currentSrc++;
                 currentDest++;
@@ -268,6 +299,7 @@ VOID strncatHead(char* dest, char*src, int n)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
+						stackTraces[currentDest] = getStackTrace();
                 }
                 currentSrc++;
                 currentDest++;
@@ -296,6 +328,7 @@ VOID memcpyHead(char* dest, char* src, int n)
 		if(taintedBytes[currentSrc]==1){
 			//mark corresponding dest byte
 			taintedBytes[currentDest] = 1;
+			stackTraces[currentDest] = getStackTrace();
 		}
 		currentSrc++;
 		currentDest++;
@@ -331,10 +364,10 @@ VOID memsetHead(void* dest, int c, size_t n)
 
         for(unsigned int i=startErase;i<startEraseConst+n;i++){
                 // clear marked byte which is getting overwritten
-		if(taintedBytes[startErase] == 1){
-			taintedBytes[startErase] = 0;
-                	startErase++;
-		}
+			if(taintedBytes[startErase] == 1){
+				taintedBytes[startErase] = 0;
+						startErase++;
+			}
         }
 }
 
@@ -356,14 +389,53 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 	unsigned int memAddrNum = hex2Int(memAddr);
 
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
-		cout << "********************ATTACK DETECTED********************" << endl;
+		cout << "******************** ATTACK DETECTED ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
-		cout << "*******************************************************" << endl;
+		int num = 0;
+		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
+			cout << "Stack " << num << ": History of Mem("<<i->first<<"):" << i->second << endl;
+		}
+		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
 	}
 	
 }
 
+bool isMainExecutableIMG(ADDRINT addr)
+{
+    PIN_LockClient();
+    RTN rtn = RTN_FindByAddress(addr);
+    PIN_UnlockClient();
+    if (rtn == RTN_Invalid())
+                    return false;
+
+    SEC sec = RTN_Sec(rtn);
+    if (sec == SEC_Invalid())
+                    return false;
+
+    IMG img = SEC_Img(sec);
+    if (img == IMG_Invalid())
+                    return false;
+    if(IMG_IsMainExecutable(img)) return true;
+
+    return false;
+}
+
+VOID functionCall(ADDRINT funcAddr){
+
+	if(isMainExecutableIMG(funcAddr))
+	{
+		pushFncAddr(funcAddr);
+	}
+}
+
+VOID returnInstruction(ADDRINT funcAddr,ADDRINT target){
+
+	if(isMainExecutableIMG(target))
+	{
+		fncStk.pop();
+	}
+}
 
 // Instrumentaion Routine for instructions
 VOID Instruction(INS ins, VOID *v) {
@@ -380,6 +452,29 @@ VOID Instruction(INS ins, VOID *v) {
 			IARG_END);			
 		}
 	}
+	if(INS_IsCall(ins)){
+        RTN rtn = RTN_FindByAddress(INS_Address(ins));
+
+        if (RTN_Valid(rtn))
+        {
+            INS_InsertCall(ins,IPOINT_BEFORE, (AFUNPTR)functionCall,
+                 IARG_INST_PTR,
+                 IARG_END);
+        }
+	}
+    if(INS_IsRet(ins)){
+
+        RTN rtn = RTN_FindByAddress(INS_Address(ins));
+
+        if (RTN_Valid(rtn))
+        {
+            INS_InsertCall(ins,IPOINT_BEFORE, (AFUNPTR)returnInstruction,
+                 IARG_INST_PTR,
+                 IARG_BRANCH_TARGET_ADDR,
+                 IARG_END);
+        }
+
+    }
 
 }
 
