@@ -53,7 +53,7 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	int c =1;
 	for(unsigned int i=low;i<=up;i++){
-	//	cout << c << "[TAINTED] " << int2Hex(i) << endl;
+		//cout << c << "[TAINTED] " << int2Hex(i) << endl;
 		c++;
 		taintedBytes[i] = 1;
 	}
@@ -332,7 +332,52 @@ VOID memsetHead(void* dest, int c, size_t n)
         }
 }
 
+// Analysis routine for a control flow instruction
+VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
+{
+	char instAddrArr[32];
+	char memAddrArr[32];
+	char targetAddrArr[32];
 
+	//get hex addresses
+	sprintf(instAddrArr,"0x%x",ins);
+	sprintf(memAddrArr,"0x%x",addr);
+	sprintf(targetAddrArr,"0x%x",target);
+
+	string instAddr = instAddrArr;
+	string memAddr = memAddrArr;
+	string targetAddr = targetAddrArr;
+	unsigned int memAddrNum = hex2Int(memAddr);
+
+	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
+		cout << "********************ATTACK DETECTED********************" << endl;
+		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
+		cout << "*******************************************************" << endl;
+		PIN_ExitProcess(1);
+	}
+	
+}
+
+
+// Instrumentaion Routine for instructions
+VOID Instruction(INS ins, VOID *v) {
+		
+	// if the instruction changes control flow of program
+	if(INS_IsIndirectControlFlow(ins)){
+			
+		// make sure the instruction is reading from memory
+		if(INS_IsMemoryRead(ins)){
+			INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) controlFlowHead,
+				IARG_INST_PTR,
+				IARG_MEMORYREAD_EA,
+				IARG_BRANCH_TARGET_ADDR,
+			IARG_END);			
+		}
+	}
+
+}
+
+// Instrumentation Routine for images
 VOID Image(IMG img, VOID *v) {
 	RTN rtn;
 
@@ -469,6 +514,7 @@ int main(int argc, char *argv[])
 	}
 		
  	IMG_AddInstrumentFunction(Image, 0);
+	INS_AddInstrumentFunction(Instruction, 0);
 	PIN_StartProgram();
 
 	return 0;
