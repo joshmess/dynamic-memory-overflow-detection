@@ -389,7 +389,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 	unsigned int memAddrNum = hex2Int(memAddr);
 
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
-		cout << "******************** ATTACK DETECTED ********************" << endl;
+		cout << "******************** Attack Detected ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		int num = 0;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
