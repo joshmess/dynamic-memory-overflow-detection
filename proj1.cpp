@@ -59,7 +59,7 @@ string getStackTrace(){
 	}
 	reverseStack.pop_back();
 	for(vector<string>::iterator i=reverseStack.end()-1; i >= reverseStack.begin();i--){
-		toReturn += *i + " "
+		toReturn += *i + " ";
 	}
 	return toReturn;	
 }
