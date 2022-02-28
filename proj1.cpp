@@ -413,7 +413,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		while(!functions.empty()){
 			cout <<"Stack " << num << functions.top();
 			functions.pop();
-			n++;
+			num++;
 		}
 		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
