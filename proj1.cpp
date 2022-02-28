@@ -405,7 +405,8 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		int num = 0;
 		stack<string> functions;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
-				functions.push("Stack " + num + ": History of Mem("<<int2Hex(i->first)<<"):" + i->second + "\n");
+				string toPush = "Stack " + num + ": History of Mem("<<int2Hex(i->first)<<"):" + i->second + "\n";
+				functions.push(toPush);
 				num++;
 			
 		}
