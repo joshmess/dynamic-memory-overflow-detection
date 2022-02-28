@@ -184,7 +184,7 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
-	stackTraces[upperAddr] = getStackTrace();
+	stackTraces[lowerAddr] = getStackTrace();
 }
 
 // Analysis Routine for strcpy
@@ -405,10 +405,22 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		cout << "******************** Attack Detected ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		int num = 0;
+		stack<string> functions;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
-				cout << "Stack " << num << ": History of Mem(" + int2Hex(i->first) + "):" + i->second + "\n";
-				num++;
+				string toPush = "";
+				if(i!=stackTraces.begin()){
+					toPush = ": History of Mem(" + memAddr + "):" + i->second + "\n";
+				}else{
+					toPush = ": History of Mem(" + int2Hex((i->first)+60) + "):" + i->second + "\n";
+				}
+				functions.push(toPush);
 			
+		}
+
+		while(!functions.empty()){
+			cout <<"Stack " << num << functions.top();
+			functions.pop();
+			num++;
 		}
 		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
