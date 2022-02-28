@@ -127,7 +127,7 @@ VOID fgetsTail(char* ret)
 		unsigned int upperAddr = lowerAddr + fgets_length - 1;		
 		
 		addTaintedBytes(lowerAddr,upperAddr);	
-		stackTraces[lowerAddr] = getStackTrace;
+		stackTraces[lowerAddr] = getStackTrace();
 	
 	}
 	fgets_stdin = false;
@@ -159,7 +159,7 @@ VOID getsTail(char* dest)
 	unsigned int upperAddr = lowerAddr + strlen(dest) - 1;		
 	
 	addTaintedBytes(lowerAddr,upperAddr);
-	stackTraces[lowerAddr] = getStackTrace;
+	stackTraces[lowerAddr] = getStackTrace();
 		
 }
 
