@@ -162,8 +162,12 @@ VOID getsTail(char* dest)
 }
 
 // Analysis Routine for command-line args
-VOID mainHead(int argc, char** argv)
+VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
+
+	// add fnc to stack
+	pushFncAddr(fnc);
+	
 	for(int i=0;i<argc;i++){
 		
 		unsigned int lowerAddr, upperAddr;
@@ -597,6 +601,7 @@ VOID Image(IMG img, VOID *v) {
 		RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)mainHead, 
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
+			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
