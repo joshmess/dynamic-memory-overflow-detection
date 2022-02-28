@@ -184,7 +184,7 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
-	stackTraces[lowerAddr] = getStackTrace();
+	stackTraces[upperAddr] = getStackTrace();
 }
 
 // Analysis Routine for strcpy
