@@ -184,7 +184,8 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
-	stackTraces[lowerAddr] = getStackTrace();
+	cout << "MARKING trace at byte "<< int2Hex(lowerAddr+60)
+	stackTraces[lowerAddr+60] = getStackTrace();
 }
 
 // Analysis Routine for strcpy
@@ -408,8 +409,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		stack<string> functions;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
 				string toPush = "";
-				
-					toPush = ": History of Mem(" + int2Hex((i->first)+60) + "):" + i->second + "\n";
+				toPush = ": History of Mem(" + int2Hex(i->first) + "):" + i->second + "\n";
 				
 				functions.push(toPush);
 			
