@@ -409,7 +409,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 				if(i!=stackTraces.begin()){
 					toPush = ": History of Mem(" + memAddr + "):" + i->second + "\n";
 				}else{
-					toPush = ": History of Mem(" + int2Hex(i->first) + "):" + i->second + "\n";
+					toPush = ": History of Mem(" + int2Hex((i->first)+60) + "):" + i->second + "\n";
 				}
 				functions.push(toPush);
 			
