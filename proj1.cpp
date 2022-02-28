@@ -1,7 +1,7 @@
 /*
 Author: Josh Messitte
-CSCI 8240: SW Security & Cyber Forensics
-Dynamic Memory Overflow Detection Using Taint Analysis
+CSCI 8240: Software Security & Cyber Forensics
+Project 1: Dynamic Memory Overflow Detection Using Taint Analysis
 */
 
 #include "pin.H"
@@ -31,14 +31,14 @@ Dynamic Memory Overflow Detection Using Taint Analysis
 using namespace std;
 using namespace tr1;
 
-// Hashmap to track tainted bytes
+// Hashmap to track tainted bytes (pt. 1-3)
 unordered_map<unsigned int,unsigned int> taintedBytes;
 
-// Data structures to keep track of stack traces too
+// Data structures to keep track of stack traces too pt. 4
 unordered_map<unsigned int, string> stackTraces;
 stack<string> fncStk;
 
-// Push back stack with new function address
+// Push function address to top of stack
 void pushFncAddr(ADDRINT fnc){
 
 	char fncAddrArr[32];
@@ -54,10 +54,12 @@ string getStackTrace(){
 	string toReturn = "";
 	vector<string> reverseStack;
 
+	//pop all off tmp stack, creating an arr in reverse order
 	for(stack<string> tmp = fncStk; !tmp.empty(); tmp.pop()){
 		reverseStack.push_back(tmp.top());
 	}
 	reverseStack.pop_back();
+	//reconstruct stack in correct order
 	for(vector<string>::iterator i=reverseStack.end()-1; i >= reverseStack.begin();i--){
 		toReturn += *i + ", ";
 	}
@@ -94,7 +96,6 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 }
 
-
 typedef int ( *FP_FILENO )(FILE*);
 FP_FILENO org_fileno;
 
@@ -114,8 +115,11 @@ bool fgets_stdin = false;
 size_t fgets_length = 0;
 
 // Analysis routine for fgets
-VOID fgetsTail(char* ret)
+VOID fgetsTail(char* ret, ADDRINT fnc)
 {
+	// add fnc to stack
+	pushFncAddr(fnc);
+	
 	if(fgets_stdin) {
 
 		// Get base address as string
@@ -134,7 +138,7 @@ VOID fgetsTail(char* ret)
 
 
 // Analysis routine for fgets
-VOID fgetsHead(char* dest, int size, FILE *stream)
+VOID fgetsHead(char* dest, int size, FILE *stream, ADDRINT fnc)
 {
 	if(isStdin(stream)){	//detects whether src is sdtin
 		printf("fgetsHead: dest %p, size %d, stream: stdin)\n", dest, size);
@@ -144,8 +148,12 @@ VOID fgetsHead(char* dest, int size, FILE *stream)
 }
 
 // Analysis routine for gets
-VOID getsTail(char* dest)
+VOID getsTail(char* dest, ADDRINT fnc)
 {
+
+	// add fnc to stack
+	pushFncAddr(fnc);
+
 	printf("getsTail: dest %p\n", dest);
 	printf("size of dest: %d\n", strlen(dest));
 
@@ -167,7 +175,7 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 
 	// add fnc to stack
 	pushFncAddr(fnc);
-	
+
 	for(int i=0;i<argc;i++){
 		
 		unsigned int lowerAddr, upperAddr;
@@ -185,8 +193,11 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 }
 
 // Analysis Routine for strcpy
-VOID strcpyHead(char* dest, char* src)
+VOID strcpyHead(char* dest, char* src, ADDRINT fnc)
 {
+	// add fnc to stack
+	pushFncAddr(fnc);
+
 	// get addresses for src and dest
 	char srcAddrArr[32];
        	sprintf(srcAddrArr,"%p",src);
@@ -215,8 +226,12 @@ VOID strcpyHead(char* dest, char* src)
 }
 
 // Analysis Routine for strncpy
-VOID strncpyHead(char* dest, char* src, int n)
+VOID strncpyHead(char* dest, char* src, int n, ADDRINT fnc)
 {
+
+	// add fnc to stack
+	pushFncAddr(fnc);
+	
 	//cout << "IN STRNCPY" << endl;
 	// get addresses for src and dest
         char srcAddrArr[32];
@@ -248,8 +263,12 @@ VOID strncpyHead(char* dest, char* src, int n)
 }
 
 // Analysis Routine for strcat
-VOID strcatHead(char* dest, char* src)
+VOID strcatHead(char* dest, char* src, ADDRINT fnc)
 {
+
+	// add fnc to stack
+	pushFncAddr(fnc);
+
 	//get src and dest addr
 	char srcAddrArr[32];
         sprintf(srcAddrArr,"%p",src);
@@ -280,8 +299,12 @@ VOID strcatHead(char* dest, char* src)
 }
 
 // Analysis Routine for strncat
-VOID strncatHead(char* dest, char*src, int n)
+VOID strncatHead(char* dest, char*src, int n, ADDRINT fnc)
 {
+
+	// add fnc to stack
+	pushFncAddr(fnc);
+
 	char srcAddrArr[32];
         sprintf(srcAddrArr,"%p",src);
         string srcAddr = srcAddrArr;
@@ -312,8 +335,12 @@ VOID strncatHead(char* dest, char*src, int n)
 }
 
 // Analysis Routine for memcpy
-VOID memcpyHead(char* dest, char* src, int n)
+VOID memcpyHead(char* dest, char* src, int n, ADDRINT fnc)
 {
+
+	// add fnc to stack
+	pushFncAddr(fnc);
+
 	char srcAddrArr[32];
         sprintf(srcAddrArr,"%p",src);
         string srcAddr = srcAddrArr;
@@ -340,7 +367,7 @@ VOID memcpyHead(char* dest, char* src, int n)
 }
 
 // Anaylsis Routine for bzero
-VOID bzeroHead(void* dest, int n)
+VOID bzeroHead(void* dest, int n, ADDRINT fnc)
 {
 	char destAddrArr[32];
 	sprintf(destAddrArr,"%p",dest);
@@ -357,7 +384,7 @@ VOID bzeroHead(void* dest, int n)
 }
 
 // Analysis Routine for memset
-VOID memsetHead(void* dest, int c, size_t n)
+VOID memsetHead(void* dest, int c, size_t n, ADDRINT fnc)
 {
 	char destAddrArr[32];
         sprintf(destAddrArr,"%p",dest);
@@ -498,10 +525,12 @@ VOID Image(IMG img, VOID *v) {
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 2,
+			IARG_INST_PTR,
 		IARG_END);
 
 		RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)fgetsTail, 
 			IARG_FUNCRET_EXITPOINT_VALUE,
+			IARG_INST_PTR,
 			IARG_END);
 			RTN_Close(rtn);
 		}
@@ -512,6 +541,7 @@ VOID Image(IMG img, VOID *v) {
 		RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)getsTail, 
 			//IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCRET_EXITPOINT_VALUE,
+			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
@@ -522,6 +552,7 @@ VOID Image(IMG img, VOID *v) {
 		RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)strcpyHead, 
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
+			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
@@ -579,6 +610,7 @@ VOID Image(IMG img, VOID *v) {
 		RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)bzeroHead, 
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
+			IARG_INST_PTR,
 		IARG_END);
 			RTN_Close(rtn);
 	}
