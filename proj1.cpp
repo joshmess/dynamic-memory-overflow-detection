@@ -170,9 +170,11 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 	// add fnc to stack
 	pushFncAddr(fnc);
 
+	unsigned int lowerAddr, upperAddr;
+
 	for(int i=0;i<argc;i++){
 		
-		unsigned int lowerAddr, upperAddr;
+		
 
 		char baseAddress[32];
         	sprintf(baseAddress,"%p",argv[i]);
@@ -184,6 +186,7 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
+	stackTraces[lowerAddr] = getStackTrace();
 }
 
 // Analysis Routine for strcpy
