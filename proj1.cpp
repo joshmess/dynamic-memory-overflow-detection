@@ -127,7 +127,7 @@ VOID fgetsTail(char* ret)
 		unsigned int upperAddr = lowerAddr + fgets_length - 1;		
 		
 		addTaintedBytes(lowerAddr,upperAddr);	
-		stackTraces[lowerAddr] = getStackTrace();
+		//stackTraces[lowerAddr] = getStackTrace();
 	
 	}
 	fgets_stdin = false;
@@ -159,7 +159,7 @@ VOID getsTail(char* dest)
 	unsigned int upperAddr = lowerAddr + strlen(dest) - 1;		
 	
 	addTaintedBytes(lowerAddr,upperAddr);
-	stackTraces[lowerAddr] = getStackTrace();
+	//stackTraces[lowerAddr] = getStackTrace();
 		
 }
 
@@ -169,10 +169,10 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 
 	// add fnc to stack
 	pushFncAddr(fnc);
-
+	unsigned int lowerAddr, upperAddr;
 	for(int i=0;i<argc;i++){
 		
-		unsigned int lowerAddr, upperAddr;
+		//unsigned int lowerAddr, upperAddr;
 
 		char baseAddress[32];
         	sprintf(baseAddress,"%p",argv[i]);
@@ -184,11 +184,13 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
+	stackTraces[lowerAddr] = getStackTrace();
 }
 
 // Analysis Routine for strcpy
 VOID strcpyHead(char* dest, char* src)
 {
+
 	// get addresses for src and dest
 	char srcAddrArr[32];
        	sprintf(srcAddrArr,"%p",src);
