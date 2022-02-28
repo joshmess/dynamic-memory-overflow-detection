@@ -405,14 +405,15 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		int num = 0;
 		stack<string> functions;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
-				string toPush = "Stack " + std::to_string(num) + ": History of Mem(" + int2Hex(i->first) + "):" + i->second + "\n";
+				string toPush = ": History of Mem(" + int2Hex(i->first) + "):" + i->second + "\n";
 				functions.push(toPush);
-				num++;
 			
 		}
+
 		while(!functions.empty()){
-			cout << functions.top();
+			cout <<"Stack " << num << functions.top();
 			functions.pop();
+			n++;
 		}
 		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
