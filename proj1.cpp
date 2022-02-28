@@ -91,7 +91,7 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	for(unsigned int i=low;i<=up;i++){
 		taintedBytes[i] = 1;
-		stackTraces[i] = getStackTrace();
+		//stackTraces[i] = getStackTrace();
 	}
 
 }
@@ -127,7 +127,7 @@ VOID fgetsTail(char* ret)
 		unsigned int upperAddr = lowerAddr + fgets_length - 1;		
 		
 		addTaintedBytes(lowerAddr,upperAddr);	
-
+		stackTraces[lowerAddr] = getStackTrace;
 	
 	}
 	fgets_stdin = false;
@@ -159,6 +159,7 @@ VOID getsTail(char* dest)
 	unsigned int upperAddr = lowerAddr + strlen(dest) - 1;		
 	
 	addTaintedBytes(lowerAddr,upperAddr);
+	stackTraces[lowerAddr] = getStackTrace;
 		
 }
 
@@ -208,11 +209,12 @@ VOID strcpyHead(char* dest, char* src)
 		if(taintedBytes[currentSrc]==1){	// src is tainted
 			//mark corresponding dest byte as tainted
 			taintedBytes[currentDest] = 1;
-			stackTraces[currentDest] = getStackTrace();
+			//stackTraces[currentDest] = getStackTrace();
 		}	
 		currentSrc++;
 		currentDest++;
 	}
+	stackTraces[ hex2Int(destAddr)] = getStackTrace();
 }
 
 // Analysis Routine for strncpy
@@ -245,7 +247,8 @@ VOID strncpyHead(char* dest, char* src, int n)
                 }
                 currentSrc++;
                 currentDest++;
-        }
+    }
+	stackTraces[ hex2Int(destAddr)] = getStackTrace();
 }
 
 // Analysis Routine for strcat
@@ -277,7 +280,8 @@ VOID strcatHead(char* dest, char* src)
                 }
                 currentSrc++;
                 currentDest++;
-        }	
+    }	
+	stackTraces[ hex2Int(destAddr)] = getStackTrace();
 }
 
 // Analysis Routine for strncat
@@ -309,6 +313,7 @@ VOID strncatHead(char* dest, char*src, int n)
                 currentSrc++;
                 currentDest++;
         }
+		stackTraces[ hex2Int(destAddr)] = getStackTrace();
 
 }
 
@@ -338,6 +343,7 @@ VOID memcpyHead(char* dest, char* src, int n)
 		currentSrc++;
 		currentDest++;
 	}
+	stackTraces[ hex2Int(destAddr)] = getStackTrace();
 }
 
 // Anaylsis Routine for bzero
@@ -398,10 +404,10 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		int num = 0;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
-			if(memAddr == int2Hex(i->first)){
+			//if(memAddr == int2Hex(i->first)){
 				cout << "Stack " << num << ": History of Mem("<<int2Hex(i->first)<<"):" << i->second << endl;
 				num++;
-			}
+			//}
 		}
 		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
