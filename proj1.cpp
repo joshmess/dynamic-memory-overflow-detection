@@ -115,11 +115,8 @@ bool fgets_stdin = false;
 size_t fgets_length = 0;
 
 // Analysis routine for fgets
-VOID fgetsTail(char* ret, ADDRINT fnc)
+VOID fgetsTail(char* ret)
 {
-	// add fnc to stack
-	pushFncAddr(fnc);
-	
 	if(fgets_stdin) {
 
 		// Get base address as string
@@ -138,7 +135,7 @@ VOID fgetsTail(char* ret, ADDRINT fnc)
 
 
 // Analysis routine for fgets
-VOID fgetsHead(char* dest, int size, FILE *stream, ADDRINT fnc)
+VOID fgetsHead(char* dest, int size, FILE *stream)
 {
 	if(isStdin(stream)){	//detects whether src is sdtin
 		printf("fgetsHead: dest %p, size %d, stream: stdin)\n", dest, size);
@@ -148,12 +145,8 @@ VOID fgetsHead(char* dest, int size, FILE *stream, ADDRINT fnc)
 }
 
 // Analysis routine for gets
-VOID getsTail(char* dest, ADDRINT fnc)
+VOID getsTail(char* dest)
 {
-
-	// add fnc to stack
-	pushFncAddr(fnc);
-
 	printf("getsTail: dest %p\n", dest);
 	printf("size of dest: %d\n", strlen(dest));
 
@@ -193,11 +186,8 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 }
 
 // Analysis Routine for strcpy
-VOID strcpyHead(char* dest, char* src, ADDRINT fnc)
+VOID strcpyHead(char* dest, char* src)
 {
-	// add fnc to stack
-	pushFncAddr(fnc);
-
 	// get addresses for src and dest
 	char srcAddrArr[32];
        	sprintf(srcAddrArr,"%p",src);
@@ -226,12 +216,8 @@ VOID strcpyHead(char* dest, char* src, ADDRINT fnc)
 }
 
 // Analysis Routine for strncpy
-VOID strncpyHead(char* dest, char* src, int n, ADDRINT fnc)
+VOID strncpyHead(char* dest, char* src, int n)
 {
-
-	// add fnc to stack
-	pushFncAddr(fnc);
-	
 	//cout << "IN STRNCPY" << endl;
 	// get addresses for src and dest
         char srcAddrArr[32];
@@ -263,12 +249,8 @@ VOID strncpyHead(char* dest, char* src, int n, ADDRINT fnc)
 }
 
 // Analysis Routine for strcat
-VOID strcatHead(char* dest, char* src, ADDRINT fnc)
+VOID strcatHead(char* dest, char* src)
 {
-
-	// add fnc to stack
-	pushFncAddr(fnc);
-
 	//get src and dest addr
 	char srcAddrArr[32];
         sprintf(srcAddrArr,"%p",src);
@@ -299,12 +281,8 @@ VOID strcatHead(char* dest, char* src, ADDRINT fnc)
 }
 
 // Analysis Routine for strncat
-VOID strncatHead(char* dest, char*src, int n, ADDRINT fnc)
+VOID strncatHead(char* dest, char*src, int n)
 {
-
-	// add fnc to stack
-	pushFncAddr(fnc);
-
 	char srcAddrArr[32];
         sprintf(srcAddrArr,"%p",src);
         string srcAddr = srcAddrArr;
@@ -335,12 +313,8 @@ VOID strncatHead(char* dest, char*src, int n, ADDRINT fnc)
 }
 
 // Analysis Routine for memcpy
-VOID memcpyHead(char* dest, char* src, int n, ADDRINT fnc)
+VOID memcpyHead(char* dest, char* src, int n)
 {
-
-	// add fnc to stack
-	pushFncAddr(fnc);
-
 	char srcAddrArr[32];
         sprintf(srcAddrArr,"%p",src);
         string srcAddr = srcAddrArr;
@@ -367,7 +341,7 @@ VOID memcpyHead(char* dest, char* src, int n, ADDRINT fnc)
 }
 
 // Anaylsis Routine for bzero
-VOID bzeroHead(void* dest, int n, ADDRINT fnc)
+VOID bzeroHead(void* dest, int n)
 {
 	char destAddrArr[32];
 	sprintf(destAddrArr,"%p",dest);
@@ -384,7 +358,7 @@ VOID bzeroHead(void* dest, int n, ADDRINT fnc)
 }
 
 // Analysis Routine for memset
-VOID memsetHead(void* dest, int c, size_t n, ADDRINT fnc)
+VOID memsetHead(void* dest, int c, size_t n)
 {
 	char destAddrArr[32];
         sprintf(destAddrArr,"%p",dest);
@@ -525,12 +499,10 @@ VOID Image(IMG img, VOID *v) {
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 2,
-			IARG_INST_PTR,
 		IARG_END);
 
 		RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)fgetsTail, 
 			IARG_FUNCRET_EXITPOINT_VALUE,
-			IARG_INST_PTR,
 			IARG_END);
 			RTN_Close(rtn);
 		}
@@ -541,7 +513,6 @@ VOID Image(IMG img, VOID *v) {
 		RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)getsTail, 
 			//IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCRET_EXITPOINT_VALUE,
-			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
@@ -552,7 +523,6 @@ VOID Image(IMG img, VOID *v) {
 		RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)strcpyHead, 
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
-			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
@@ -564,7 +534,6 @@ VOID Image(IMG img, VOID *v) {
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 2,
-			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
@@ -575,7 +544,6 @@ VOID Image(IMG img, VOID *v) {
 		RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)strcatHead,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
-			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
@@ -587,7 +555,6 @@ VOID Image(IMG img, VOID *v) {
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 2,
-			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
@@ -599,7 +566,6 @@ VOID Image(IMG img, VOID *v) {
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 2,
-			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
@@ -610,7 +576,6 @@ VOID Image(IMG img, VOID *v) {
 		RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)bzeroHead, 
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
-			IARG_INST_PTR,
 		IARG_END);
 			RTN_Close(rtn);
 	}
@@ -622,7 +587,6 @@ VOID Image(IMG img, VOID *v) {
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
 			IARG_FUNCARG_ENTRYPOINT_VALUE, 2,
-			IARG_INST_PTR,
 		IARG_END);
 		RTN_Close(rtn);
 	}
