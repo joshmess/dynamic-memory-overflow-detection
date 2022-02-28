@@ -184,7 +184,7 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
-	cout << "MARKING trace at byte "<< int2Hex(lowerAddr+60)
+	cout << "MARKING trace at byte "<< int2Hex(lowerAddr+60);
 	stackTraces[lowerAddr+60] = getStackTrace();
 }
 
