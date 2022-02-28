@@ -403,10 +403,15 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		cout << "******************** Attack Detected ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		int num = 0;
+		stack<string> functions;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
-				cout << "Stack " << num << ": History of Mem("<<int2Hex(i->first)<<"):" << i->second << endl;
+				functions.push("Stack " + num + ": History of Mem("<<int2Hex(i->first)<<"):" + i->second + "\n");
 				num++;
 			
+		}
+		while(!functions.empty()){
+			cout << functions.top();
+			functions.pop();
 		}
 		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
