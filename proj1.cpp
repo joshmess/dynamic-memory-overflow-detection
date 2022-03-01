@@ -165,6 +165,9 @@ VOID getsTail(char* dest)
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
+	cout << "MAINHEAD";
+	pushFncAddr(fnc);
+
 	unsigned int lowerAddr, upperAddr;
 	for(int i=0;i<argc;i++){
 		
