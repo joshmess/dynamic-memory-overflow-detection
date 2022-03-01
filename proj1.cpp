@@ -44,6 +44,7 @@ void pushFncAddr(ADDRINT fnc){
 	char fncAddrArr[32];
 	sprintf(fncAddrArr,"0x%x",fnc);
 	string fncAddr = fncAddrArr;
+	cout << "FNC: "<< fncAddr << endl;
 	fncStk.push(fncAddr);
 
 }
@@ -167,7 +168,7 @@ VOID getsTail(char* dest)
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
-	cout << "FNC: "<< fnc << endl;
+	
 	// add fnc to stack
 	pushFncAddr(fnc);
 	unsigned int lowerAddr, upperAddr;
