@@ -97,6 +97,8 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	for(unsigned int i=low;i<=up;i++){
 		taintedBytes[i] = 1;
+
+		//also maintain stacktrace for each byte
 		stackTraces[i].push_back(getStackTrace());
 	}
 
@@ -174,6 +176,8 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
 	//cout << "MAINHEAD";
+
+	//push main function address to stack
 	pushFncAddr(fnc);
 
 	for(int i=0;i<argc;i++){
@@ -218,6 +222,8 @@ VOID strcpyHead(char* dest, char* src)
 		if(taintedBytes[currentSrc]==1){	// src is tainted
 			//mark corresponding dest byte as tainted
 			taintedBytes[currentDest] = 1;
+
+			//keep track of stack traces
 			stackTraces[currentDest].push_back(getStackTrace());
 			stackTraces[currentSrc].push_back(getStackTrace());
 
@@ -254,6 +260,7 @@ VOID strncpyHead(char* dest, char* src, int n)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
 						taintedBytes[currentDest] = 1;
+						//keep track of stack traces
 						stackTraces[currentDest].push_back(getStackTrace());
 						stackTraces[currentSrc].push_back(getStackTrace());
                 }
@@ -287,6 +294,7 @@ VOID strcatHead(char* dest, char* src)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
+						//keep track of stack traces
 						stackTraces[currentDest].push_back(getStackTrace());
 						stackTraces[currentSrc].push_back(getStackTrace());
                 }
@@ -320,6 +328,7 @@ VOID strncatHead(char* dest, char*src, int n)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
+						//keep track of stack traces
 						stackTraces[currentDest].push_back(getStackTrace());
 						stackTraces[currentSrc].push_back(getStackTrace());
                 }
@@ -351,6 +360,7 @@ VOID memcpyHead(char* dest, char* src, int n)
 		if(taintedBytes[currentSrc]==1){
 			//mark corresponding dest byte
 			taintedBytes[currentDest] = 1;
+			//keep track of stack traces
 			stackTraces[currentDest].push_back(getStackTrace());
 			stackTraces[currentSrc].push_back(getStackTrace());
 		}
@@ -478,16 +488,9 @@ VOID functionCall(ADDRINT funcAddr){
 	if(isMainExecutableIMG(funcAddr))
 	{
 		//cout << "functionCall";
+
+		// push address of new function to stack
 		pushFncAddr(funcAddr);
-	}
-}
-
-// Return, pop from stack
-VOID returnInstruction(ADDRINT funcAddr,ADDRINT target){
-
-	if(isMainExecutableIMG(target))
-	{
-		//fncStk.pop();
 	}
 }
 
@@ -516,19 +519,7 @@ VOID Instruction(INS ins, VOID *v) {
                  IARG_END);
         }
 	}
-    if(INS_IsRet(ins)){
-
-        RTN rtn = RTN_FindByAddress(INS_Address(ins));
-
-        if (RTN_Valid(rtn))
-        {
-            INS_InsertCall(ins,IPOINT_BEFORE, (AFUNPTR)returnInstruction,
-                 IARG_INST_PTR,
-                 IARG_BRANCH_TARGET_ADDR,
-                 IARG_END);
-        }
-
-    }
+    
 
 }
 
