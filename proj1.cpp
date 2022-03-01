@@ -416,7 +416,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 	
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
 
-		string stackTraceForTaintedByte = stackTraces[memAddrNum][0];
+		char stackTraceForTaintedByte[] = stackTraces[memAddrNum][0];
 		vector<string> addresses;
 		char *token = strtok(stackTraceForTaintedByte, " ");
 			while(token != NULL){
@@ -429,18 +429,18 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		//obtain stack traces
 		if(getsFlag){
 			
-			cout << "Stack 0: " << addresses[0] << ", " addresses[6] << ", " addresses[9] << ", " addresses[11] << endl;
-			cout << "Stack 1: " << addresses[0] << ", " addresses[6] << addresses[7] << endl;
+			cout << "Stack 0: " << addresses[0] << ", " << addresses[6] << ", " << addresses[9] << ", " << addresses[11] << endl;
+			cout << "Stack 1: " << addresses[0] << ", " << addresses[6] << addresses[7] << endl;
 
 
 		}if(fgetsFlag){
-			cout << "Stack 0: " << addresses[0] << ", " addresses[6] << ", " addresses[9] << ", " addresses[12] << endl;
-			cout << "Stack 1: " << addresses[0] << ", " addresses[6] << addresses[8] << endl;
+			cout << "Stack 0: " << addresses[0] << ", " << addresses[6] << ", " << addresses[9] << ", " << addresses[12] << endl;
+			cout << "Stack 1: " << addresses[0] << ", " << addresses[6] << addresses[8] << endl;
 
 
 		}else{
-			cout << "Stack 0: " << addresses[0] << ", " addresses[6] << ", " addresses[7] << ", " addresses[9] << endl;
-			cout << "Stack 1: " << addresses[0] << ", " addresses[6] << endl;
+			cout << "Stack 0: " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << ", " << addresses[9] << endl;
+			cout << "Stack 1: " << addresses[0] << ", " << addresses[6] << endl;
 
 		}
 
