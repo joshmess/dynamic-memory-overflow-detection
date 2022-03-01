@@ -31,11 +31,12 @@ Project 1: Dynamic Memory Overflow Detection Using Taint Analysis
 using namespace std;
 using namespace tr1;
 
+
 // Hashmap to track tainted bytes (pt. 1-3)
 unordered_map<unsigned int,unsigned int> taintedBytes;
 
 // Data structures to keep track of stack traces too pt. 4
-unordered_map<unsigned int, string> stackTraces;
+unordered_map<unsigned int, vector<string>> stackTraces;
 stack<string> fncStk;
 
 // Push function address to top of stack
@@ -56,10 +57,12 @@ string getStackTrace(){
 	vector<string> reverseStack;
 
 	//pop all off tmp stack, creating an arr in reverse order
-	for(stack<string> tmp = fncStk; !tmp.empty(); tmp.pop()){
+	stack<string> tmp = fncStk;
+	while(!tmp.empty()){
 		reverseStack.push_back(tmp.top());
+		tmp.pop();
 	}
-	reverseStack.pop_back();
+
 	//reconstruct stack in correct order
 	for(vector<string>::iterator i=reverseStack.end()-1; i >= reverseStack.begin();i--){
 		toReturn += *i + ", ";
@@ -92,6 +95,7 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	for(unsigned int i=low;i<=up;i++){
 		taintedBytes[i] = 1;
+		stackTraces[i].push_back(getStackTrace())
 	}
 
 }
@@ -210,6 +214,7 @@ VOID strcpyHead(char* dest, char* src)
 		if(taintedBytes[currentSrc]==1){	// src is tainted
 			//mark corresponding dest byte as tainted
 			taintedBytes[currentDest] = 1;
+			stackTraces[currentDest].push_back(getStackTrace());
 
 		}	
 		currentSrc++;
@@ -244,6 +249,7 @@ VOID strncpyHead(char* dest, char* src, int n)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
 						taintedBytes[currentDest] = 1;
+						stackTraces[currentDest].push_back(getStackTrace());
                 }
                 currentSrc++;
                 currentDest++;
@@ -275,6 +281,7 @@ VOID strcatHead(char* dest, char* src)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
+						stackTraces[currentDest].push_back(getStackTrace());
                 }
                 currentSrc++;
                 currentDest++;
@@ -306,6 +313,7 @@ VOID strncatHead(char* dest, char*src, int n)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
+						stackTraces[currentDest].push_back(getStackTrace());
                 }
                 currentSrc++;
                 currentDest++;
@@ -335,6 +343,7 @@ VOID memcpyHead(char* dest, char* src, int n)
 		if(taintedBytes[currentSrc]==1){
 			//mark corresponding dest byte
 			taintedBytes[currentDest] = 1;
+			stackTraces[currentDest].push_back(getStackTrace());
 		}
 		currentSrc++;
 		currentDest++;
@@ -399,20 +408,14 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		cout << "******************** Attack Detected ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		int num = 0;
-		stack<string> functions;
-		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
-				string toPush = "";
-				toPush = ": History of Mem(" + int2Hex((i->first)+60) + "):" + i->second + "\n";
-				
-				functions.push(toPush);
-			
-		}
+	
+		vector<string> stackTraceForTaintedByte = stackTraces[memAddrNum];
+		for(int i=stackTraceForTaintedByte.size()-1;i>=0;i--){
 
-		while(!functions.empty()){
-			cout <<"Stack " << num << functions.top();
-			functions.pop();
+			cout << "Stack " << num << ": " << stackTraceForTaintedByte[i];
 			num++;
 		}
+
 		cout << "*********************************************************" << endl;
 		PIN_ExitProcess(1);
 	}
@@ -425,16 +428,17 @@ bool isMainExecutableIMG(ADDRINT addr)
     RTN rtn = RTN_FindByAddress(addr);
     PIN_UnlockClient();
     if (rtn == RTN_Invalid())
-                    return false;
+        return false;
 
     SEC sec = RTN_Sec(rtn);
     if (sec == SEC_Invalid())
-                    return false;
+        return false;
 
     IMG img = SEC_Img(sec);
     if (img == IMG_Invalid())
-                    return false;
-    if(IMG_IsMainExecutable(img)) return true;
+        return false;
+    if(IMG_IsMainExecutable(img)) 
+		return true;
 
     return false;
 }
@@ -454,7 +458,7 @@ VOID returnInstruction(ADDRINT funcAddr,ADDRINT target){
 
 	if(isMainExecutableIMG(target))
 	{
-		fncStk.pop();
+		//fncStk.pop();
 	}
 }
 
