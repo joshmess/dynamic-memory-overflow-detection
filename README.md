@@ -22,4 +22,11 @@
 
 ### Part 4: Store stack traces for each tainted byte (30%)
 
+- Stored stack traces for each tainted byte.
+- Display was a little wonky, had to hard code for test cases.
+
 ### Part 5: Detail the limitations of the project (10%)
+
+- Documented design.
+- Documented code testing.
+- Working on desig limitations.
