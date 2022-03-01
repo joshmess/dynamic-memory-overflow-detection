@@ -498,7 +498,7 @@ VOID functionCall(ADDRINT funcAddr){
 // Return instruction pop stack
 VOID returnINS(ADDRINT fncAddr, ADDRINT target){
 
-	if(isMainExecutableIMG(funcAddr))
+	if(isMainExecutableIMG(fncAddr))
 	{
 		//fncStk.pop();
 	}
