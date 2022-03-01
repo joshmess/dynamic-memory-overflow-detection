@@ -172,10 +172,9 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 	cout << "MAINHEAD";
 	pushFncAddr(fnc);
 
-	unsigned int lowerAddr, upperAddr;
 	for(int i=0;i<argc;i++){
 		
-		//unsigned int lowerAddr, upperAddr;
+		unsigned int lowerAddr, upperAddr;
 
 		char baseAddress[32];
         	sprintf(baseAddress,"%p",argv[i]);
@@ -216,6 +215,7 @@ VOID strcpyHead(char* dest, char* src)
 			//mark corresponding dest byte as tainted
 			taintedBytes[currentDest] = 1;
 			stackTraces[currentDest].push_back(getStackTrace());
+			stackTraces[currentSrc].push_back(getStackTrace());
 
 		}	
 		currentSrc++;
@@ -251,6 +251,7 @@ VOID strncpyHead(char* dest, char* src, int n)
                         //mark corresponding dest byte as tainted
 						taintedBytes[currentDest] = 1;
 						stackTraces[currentDest].push_back(getStackTrace());
+						stackTraces[currentSrc].push_back(getStackTrace());
                 }
                 currentSrc++;
                 currentDest++;
@@ -283,6 +284,7 @@ VOID strcatHead(char* dest, char* src)
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
 						stackTraces[currentDest].push_back(getStackTrace());
+						stackTraces[currentSrc].push_back(getStackTrace());
                 }
                 currentSrc++;
                 currentDest++;
@@ -315,6 +317,7 @@ VOID strncatHead(char* dest, char*src, int n)
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
 						stackTraces[currentDest].push_back(getStackTrace());
+						stackTraces[currentSrc].push_back(getStackTrace());
                 }
                 currentSrc++;
                 currentDest++;
@@ -345,6 +348,7 @@ VOID memcpyHead(char* dest, char* src, int n)
 			//mark corresponding dest byte
 			taintedBytes[currentDest] = 1;
 			stackTraces[currentDest].push_back(getStackTrace());
+			stackTraces[currentSrc].push_back(getStackTrace());
 		}
 		currentSrc++;
 		currentDest++;
