@@ -33,10 +33,10 @@ using namespace tr1;
 
 
 // Hashmap to track tainted bytes (pt. 1-3)
-unordered_map<unsigned int,unsigned int> taintedBytes;
+map<unsigned int,unsigned int> taintedBytes;
 
 // Data structures to keep track of stack traces too pt. 4
-unordered_map<unsigned int, (vector<string>)> stackTraces;
+map<unsigned int, vector<string>> stackTraces;
 stack<string> fncStk;
 
 // Push function address to top of stack
