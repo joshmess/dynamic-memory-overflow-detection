@@ -413,13 +413,14 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 	string targetAddr = targetAddrArr;
 	unsigned int memAddrNum = hex2Int(memAddr);
 
-	if(getsFlag){
-		cout << "GETSSSS" << endl;
-
-	}if(fgetsFlag){
-		cout << "FGETSSSS" << endl;
-	}
+	
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
+		if(getsFlag){
+			cout << "GETSSSS" << endl;
+
+		}if(fgetsFlag){
+			cout << "FGETSSSS" << endl;
+		}
 		cout << "******************** Attack Detected ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		int num = 0;
