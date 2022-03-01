@@ -168,7 +168,7 @@ VOID getsTail(char* dest)
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
-	
+	cout << "mainHead" << endl;
 	// add fnc to stack
 	pushFncAddr(fnc);
 	unsigned int lowerAddr, upperAddr;
@@ -452,6 +452,7 @@ VOID functionCall(ADDRINT funcAddr){
 
 	if(isMainExecutableIMG(funcAddr))
 	{
+		cout << "functionCall" << endl;
 		pushFncAddr(funcAddr);
 	}
 }
@@ -480,7 +481,7 @@ VOID Instruction(INS ins, VOID *v) {
 			IARG_END);			
 		}
 	}
-	/*if(INS_IsCall(ins)){
+	if(INS_IsCall(ins)){
         RTN rtn = RTN_FindByAddress(INS_Address(ins));
 
         if (RTN_Valid(rtn))
@@ -502,7 +503,7 @@ VOID Instruction(INS ins, VOID *v) {
                  IARG_END);
         }
 
-    }*/
+    }
 
 }
 
