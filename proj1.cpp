@@ -47,7 +47,7 @@ void pushFncAddr(ADDRINT fnc){
 	char fncAddrArr[32];
 	sprintf(fncAddrArr,"0x%x",fnc);
 	string fncAddr = fncAddrArr;
-	cout << "FNC: "<< fncAddr << endl;
+	//cout << "FNC: "<< fncAddr << endl;
 	fncStk.push(fncAddr);
 
 }
@@ -173,7 +173,7 @@ VOID getsTail(char* dest)
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
-	cout << "MAINHEAD";
+	//cout << "MAINHEAD";
 	pushFncAddr(fnc);
 
 	for(int i=0;i<argc;i++){
@@ -478,7 +478,7 @@ VOID functionCall(ADDRINT funcAddr){
 
 	if(isMainExecutableIMG(funcAddr))
 	{
-		cout << "functionCall";
+		//cout << "functionCall";
 		pushFncAddr(funcAddr);
 	}
 }
