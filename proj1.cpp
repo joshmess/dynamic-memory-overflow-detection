@@ -44,7 +44,7 @@ void pushFncAddr(ADDRINT fnc){
 	char fncAddrArr[32];
 	sprintf(fncAddrArr,"0x%x",fnc);
 	string fncAddr = fncAddrArr;
-
+	cout << "FNC: "<< fncAddr << endl;
 	fncStk.push(fncAddr);
 
 }
@@ -165,12 +165,6 @@ VOID getsTail(char* dest)
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
-	char fncAddrArr[32];
-	sprintf(fncAddrArr,"0x%x",fnc);
-	string fncAddr = fncAddrArr;
-
-	cout << "MAINHEAD\t[" << fncAddr << "]\n"; 
-
 	unsigned int lowerAddr, upperAddr;
 	for(int i=0;i<argc;i++){
 		
@@ -186,6 +180,7 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
+	stackTraces[lowerAddr] = getStackTrace();
 }
 
 // Analysis Routine for strcpy
@@ -212,6 +207,7 @@ VOID strcpyHead(char* dest, char* src)
 		if(taintedBytes[currentSrc]==1){	// src is tainted
 			//mark corresponding dest byte as tainted
 			taintedBytes[currentDest] = 1;
+
 		}	
 		currentSrc++;
 		currentDest++;
@@ -441,15 +437,12 @@ bool isMainExecutableIMG(ADDRINT addr)
 }
 
 // Function call, push to stack
-VOID functionCall(ADDRINT fnc){
+VOID functionCall(ADDRINT funcAddr){
 
-	if(isMainExecutableIMG(fnc))
+	if(isMainExecutableIMG(funcAddr))
 	{
-		char fncAddrArr[32];
-		sprintf(fncAddrArr,"0x%x",fnc);
-		string fncAddr = fncAddrArr;
-		cout << "FUNCTIONCALL\t[" << fncAddr << "]\n"; 
-		//pushFncAddr(funcAddr);
+		cout << "functionCall";
+		pushFncAddr(funcAddr);
 	}
 }
 
