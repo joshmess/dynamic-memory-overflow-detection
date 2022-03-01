@@ -146,6 +146,7 @@ VOID fgetsHead(char* dest, int size, FILE *stream)
 		printf("fgetsHead: dest %p, size %d, stream: stdin)\n", dest, size);
 		fgets_stdin = true;
 		fgets_length = size;
+		fgetsFlag = True;
 	} 
 }
 
@@ -154,6 +155,7 @@ VOID getsTail(char* dest)
 {
 	printf("getsTail: dest %p\n", dest);
 	printf("size of dest: %d\n", strlen(dest));
+	getsFlag = true;
 
 	// Get base address as string
        	char baseAddress[32];
@@ -411,6 +413,12 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 	string targetAddr = targetAddrArr;
 	unsigned int memAddrNum = hex2Int(memAddr);
 
+	if(getsFlag){
+		cout << "GETSSSS" << endl;
+
+	}if(fgetsFlag){
+		cout << "FGETSSSS" << endl;
+	}
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
 		cout << "******************** Attack Detected ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
