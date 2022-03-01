@@ -410,6 +410,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		int num = 0;
 	
 		vector<string> stackTraceForTaintedByte = stackTraces[memAddrNum];
+		cout << "SIZE: " << stackTraceForTaintedByte.size();
 		for(int i=stackTraceForTaintedByte.size()-1;i>=0;i--){
 
 			cout << "Stack " << num << ": " << stackTraceForTaintedByte[i];
