@@ -92,7 +92,6 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	for(unsigned int i=low;i<=up;i++){
 		taintedBytes[i] = 1;
-		//stackTraces[i] = getStackTrace();
 	}
 
 }
@@ -128,7 +127,6 @@ VOID fgetsTail(char* ret)
 		unsigned int upperAddr = lowerAddr + fgets_length - 1;		
 		
 		addTaintedBytes(lowerAddr,upperAddr);	
-		//stackTraces[lowerAddr] = getStackTrace();
 	
 	}
 	fgets_stdin = false;
@@ -160,7 +158,6 @@ VOID getsTail(char* dest)
 	unsigned int upperAddr = lowerAddr + strlen(dest) - 1;		
 	
 	addTaintedBytes(lowerAddr,upperAddr);
-	//stackTraces[lowerAddr] = getStackTrace();
 		
 }
 
@@ -168,9 +165,6 @@ VOID getsTail(char* dest)
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
-	cout << "mainHead";
-	// add fnc to stack
-	pushFncAddr(fnc);
 	unsigned int lowerAddr, upperAddr;
 	for(int i=0;i<argc;i++){
 		
@@ -218,7 +212,7 @@ VOID strcpyHead(char* dest, char* src)
 		currentSrc++;
 		currentDest++;
 	}
-	stackTraces[ hex2Int(destAddr)] = getStackTrace();
+
 }
 
 // Analysis Routine for strncpy
@@ -252,7 +246,6 @@ VOID strncpyHead(char* dest, char* src, int n)
                 currentSrc++;
                 currentDest++;
     }
-	stackTraces[ hex2Int(destAddr)] = getStackTrace();
 }
 
 // Analysis Routine for strcat
@@ -285,7 +278,7 @@ VOID strcatHead(char* dest, char* src)
                 currentSrc++;
                 currentDest++;
     }	
-	stackTraces[ hex2Int(destAddr)] = getStackTrace();
+
 }
 
 // Analysis Routine for strncat
@@ -317,7 +310,7 @@ VOID strncatHead(char* dest, char*src, int n)
                 currentSrc++;
                 currentDest++;
         }
-		stackTraces[ hex2Int(destAddr)] = getStackTrace();
+
 
 }
 
@@ -347,7 +340,7 @@ VOID memcpyHead(char* dest, char* src, int n)
 		currentSrc++;
 		currentDest++;
 	}
-	stackTraces[ hex2Int(destAddr)] = getStackTrace();
+
 }
 
 // Anaylsis Routine for bzero
