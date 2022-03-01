@@ -480,7 +480,7 @@ VOID Instruction(INS ins, VOID *v) {
 			IARG_END);			
 		}
 	}
-	if(INS_IsCall(ins)){
+	/*if(INS_IsCall(ins)){
         RTN rtn = RTN_FindByAddress(INS_Address(ins));
 
         if (RTN_Valid(rtn))
@@ -502,7 +502,7 @@ VOID Instruction(INS ins, VOID *v) {
                  IARG_END);
         }
 
-    }
+    }*/
 
 }
 
