@@ -95,7 +95,7 @@ VOID addTaintedBytes(unsigned int low, unsigned int up){
 
 	for(unsigned int i=low;i<=up;i++){
 		taintedBytes[i] = 1;
-		stackTraces[i].push_back(getStackTrace())
+		stackTraces[i].push_back(getStackTrace());
 	}
 
 }
