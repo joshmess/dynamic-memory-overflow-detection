@@ -2,6 +2,7 @@
 Author: Josh Messitte
 CSCI 8240: Software Security & Cyber Forensics
 Project 1: Dynamic Memory Overflow Detection Using Taint Analysis
+Kyu Lee
 */
 
 #include "pin.H"
