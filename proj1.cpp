@@ -180,7 +180,6 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
-	stackTraces[lowerAddr] = getStackTrace();
 }
 
 // Analysis Routine for strcpy
@@ -207,7 +206,6 @@ VOID strcpyHead(char* dest, char* src)
 		if(taintedBytes[currentSrc]==1){	// src is tainted
 			//mark corresponding dest byte as tainted
 			taintedBytes[currentDest] = 1;
-			//stackTraces[currentDest] = getStackTrace();
 		}	
 		currentSrc++;
 		currentDest++;
@@ -241,7 +239,6 @@ VOID strncpyHead(char* dest, char* src, int n)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
 						taintedBytes[currentDest] = 1;
-						stackTraces[currentDest] = getStackTrace();
                 }
                 currentSrc++;
                 currentDest++;
@@ -273,7 +270,6 @@ VOID strcatHead(char* dest, char* src)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
-						stackTraces[currentDest] = getStackTrace();
                 }
                 currentSrc++;
                 currentDest++;
@@ -305,7 +301,6 @@ VOID strncatHead(char* dest, char*src, int n)
                 if(taintedBytes[currentSrc]==1){        // src is tainted
                         //mark corresponding dest byte as tainted
                         taintedBytes[currentDest] = 1;
-						stackTraces[currentDest] = getStackTrace();
                 }
                 currentSrc++;
                 currentDest++;
@@ -335,7 +330,6 @@ VOID memcpyHead(char* dest, char* src, int n)
 		if(taintedBytes[currentSrc]==1){
 			//mark corresponding dest byte
 			taintedBytes[currentDest] = 1;
-			stackTraces[currentDest] = getStackTrace();
 		}
 		currentSrc++;
 		currentDest++;
