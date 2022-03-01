@@ -431,7 +431,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		//obtain stack traces
 		if(getsFlag){
 			
-			cout << "Stack 0: " << addresses[0] << ", " << addresses[6] << ", " << addresses[9] << ", " << addresses[11] << endl;
+			cout << "Stack 0: " << addresses[0] << ", " << addresses[6] << ", " << addresses[8] << ", " << addresses[10] << endl;
 			cout << "Stack 1: " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << endl;
 
 
