@@ -416,7 +416,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 	
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
 
-		char stackTraceForTaintedByte[] = stackTraces[memAddrNum][0];
+		string stackTraceForTaintedByte = stackTraces[memAddrNum][0];
 		vector<string> addresses;
 		char *token = strtok(stackTraceForTaintedByte, " ");
 			while(token != NULL){
