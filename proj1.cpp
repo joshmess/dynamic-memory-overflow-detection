@@ -442,18 +442,18 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		//obtain stack traces
 		if(getsFlag){
 			
-			cout << "Stack 0: History of Mem(" <<memAddr << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[8] << ", " << addresses[10] << endl;
-			cout << "Stack 1: History of Mem(" <<int2Hex((memAddrNum+112)) << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << endl;
+			cout << "Stack: History of Mem(" <<memAddr << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[8] << ", " << addresses[10] << endl;
+			cout << "Stack: History of Mem(" <<int2Hex((memAddrNum+112)) << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << endl;
 
 
 		}else if(fgetsFlag){
-			cout << "Stack 0: History of Mem(" <<memAddr << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[9] << ", " << addresses[12] << endl;
-			cout << "Stack 1: History of Mem(" <<int2Hex((memAddrNum+112)) << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[8] << endl;
+			cout << "Stack: History of Mem(" <<memAddr << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[9] << ", " << addresses[12] << endl;
+			cout << "Stack: History of Mem(" <<int2Hex((memAddrNum+112)) << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[8] << endl;
 
 
 		}else{
-			cout << "Stack 0: History of Mem(" <<memAddr << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << ", " << addresses[9] << endl;
-			cout << "Stack 1: History of Mem(" <<int2Hex((memAddrNum+589)) << "): " << addresses[0] << ", " << addresses[6] << endl;
+			cout << "Stack: History of Mem(" <<memAddr << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << ", " << addresses[9] << endl;
+			cout << "Stack: History of Mem(" <<int2Hex((memAddrNum+589)) << "): " << addresses[0] << ", " << addresses[6] << endl;
 
 		}
 		cout << "*********************************************************" << endl;
@@ -495,6 +495,15 @@ VOID functionCall(ADDRINT funcAddr){
 	}
 }
 
+// Return instruction pop stack
+VOID returnINS(ADDRINT fncAddr, ADDRINT target){
+
+	if(isMainExecutableIMG(funcAddr))
+	{
+		//fncStk.pop();
+	}
+}
+
 // Instrumentaion Routine for instructions
 VOID Instruction(INS ins, VOID *v) {
 		
@@ -517,6 +526,18 @@ VOID Instruction(INS ins, VOID *v) {
         {
             INS_InsertCall(ins,IPOINT_BEFORE, (AFUNPTR)functionCall,
                  IARG_INST_PTR,
+                 IARG_END);
+        }
+	}
+	if(INS_IsRet(ins)){
+
+		RTN rtn = RTN_FindByAddress(INS_Address(ins));
+
+        if (RTN_Valid(rtn))
+        {
+            INS_InsertCall(ins,IPOINT_BEFORE, (AFUNPTR)returnIns,
+                 IARG_INST_PTR,
+                 IARG_BRANCH_TARGET_ADDR,
                  IARG_END);
         }
 	}
