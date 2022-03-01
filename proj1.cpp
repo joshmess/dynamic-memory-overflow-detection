@@ -44,7 +44,7 @@ void pushFncAddr(ADDRINT fnc){
 	char fncAddrArr[32];
 	sprintf(fncAddrArr,"0x%x",fnc);
 	string fncAddr = fncAddrArr;
-	cout << "FNC: "<< fncAddr << endl;
+
 	fncStk.push(fncAddr);
 
 }
@@ -164,6 +164,12 @@ VOID getsTail(char* dest)
 // Analysis Routine for command-line args
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
+
+	char fncAddrArr[32];
+	sprintf(fncAddrArr,"0x%x",fnc);
+	string fncAddr = fncAddrArr;
+
+	cout << "MAINHEAD\t[" << fncAddr << "]\n"; 
 
 	unsigned int lowerAddr, upperAddr;
 	for(int i=0;i<argc;i++){
@@ -435,12 +441,15 @@ bool isMainExecutableIMG(ADDRINT addr)
 }
 
 // Function call, push to stack
-VOID functionCall(ADDRINT funcAddr){
+VOID functionCall(ADDRINT fnc){
 
-	if(isMainExecutableIMG(funcAddr))
+	if(isMainExecutableIMG(fnc))
 	{
-		cout << "functionCall";
-		pushFncAddr(funcAddr);
+		char fncAddrArr[32];
+		sprintf(fncAddrArr,"0x%x",fnc);
+		string fncAddr = fncAddrArr;
+		cout << "FUNCTIONCALL\t[" << fncAddr << "]\n"; 
+		//pushFncAddr(funcAddr);
 	}
 }
 
