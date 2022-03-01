@@ -422,7 +422,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		int i = 0;
 		stringstream ssin(stackTraceForTaintedByte);
 		while (ssin.good() && i < 13){
-			ssin >> arr[i];
+			ssin >> addresses[i];
 			++i;
 		}
 		cout << "******************** Attack Detected ********************" << endl;
