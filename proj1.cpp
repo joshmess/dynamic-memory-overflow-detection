@@ -36,7 +36,7 @@ using namespace tr1;
 unordered_map<unsigned int,unsigned int> taintedBytes;
 
 // Data structures to keep track of stack traces too pt. 4
-unordered_map<unsigned int, vector<string>> stackTraces;
+unordered_map<unsigned int, (vector<string>)> stackTraces;
 stack<string> fncStk;
 
 // Push function address to top of stack
