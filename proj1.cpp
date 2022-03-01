@@ -31,6 +31,8 @@ Project 1: Dynamic Memory Overflow Detection Using Taint Analysis
 using namespace std;
 using namespace tr1;
 
+bool gets = false;
+bool fgets = false;
 
 // Hashmap to track tainted bytes (pt. 1-3)
 unordered_map<unsigned int,unsigned int> taintedBytes;
@@ -65,7 +67,7 @@ string getStackTrace(){
 
 	//reconstruct stack in correct order
 	for(vector<string>::iterator i=reverseStack.end()-1; i >= reverseStack.begin();i--){
-		toReturn += *i + ", ";
+		toReturn += *i + " ";
 	}
 	return toReturn;	
 }
