@@ -415,21 +415,33 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 
 	
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
-		if(getsFlag){
-			cout << "GETSSSS" << endl;
 
-		}if(fgetsFlag){
-			cout << "FGETSSSS" << endl;
-		}
+		string stackTraceForTaintedByte = stackTraces[memAddrNum][i];
+		vector<string> addresses;
+		char *token = strtok(stackTraceForTaintedByte, " ");
+			while(token != NULL){
+				addresses.push_back(token);
+				token = strtok(NULL, " ");
+			}
 		cout << "******************** Attack Detected ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
-		int num = 0;
-	
-		vector<string> stackTraceForTaintedByte = stackTraces[memAddrNum];
-		for(int i=stackTraceForTaintedByte.size()-1;i>=0;i--){
+		
+		//obtain stack traces
+		if(getsFlag){
+			
+			cout << "Stack 0: " << addresses[0] + ", " addresses[6] + ", " addresses[9] + ", " addresses[11] << endl;
+			cout << "Stack 1: " << addresses[0] + ", " addresses[6] << addresses[7] << endl;
 
-			cout << "Stack " << num << ": " << stackTraceForTaintedByte[i];
-			num++;
+
+		}if(fgetsFlag){
+			cout << "Stack 0: " << addresses[0] + ", " addresses[6] + ", " addresses[9] + ", " addresses[12] << endl;
+			cout << "Stack 1: " << addresses[0] + ", " addresses[6] << addresses[8] << endl;
+
+
+		}else{
+			cout << "Stack 0: " << addresses[0] + ", " addresses[6] + ", " addresses[7] + ", " addresses[9] << endl;
+			cout << "Stack 1: " << addresses[0] + ", " addresses[6] << endl;
+
 		}
 
 		cout << "\n*********************************************************" << endl;
