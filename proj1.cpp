@@ -432,12 +432,12 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		if(getsFlag){
 			
 			cout << "Stack 0: " << addresses[0] << ", " << addresses[6] << ", " << addresses[9] << ", " << addresses[11] << endl;
-			cout << "Stack 1: " << addresses[0] << ", " << addresses[6] << addresses[7] << endl;
+			cout << "Stack 1: " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << endl;
 
 
-		}if(fgetsFlag){
+		}else if(fgetsFlag){
 			cout << "Stack 0: " << addresses[0] << ", " << addresses[6] << ", " << addresses[9] << ", " << addresses[12] << endl;
-			cout << "Stack 1: " << addresses[0] << ", " << addresses[6] << addresses[8] << endl;
+			cout << "Stack 1: " << addresses[0] << ", " << addresses[6] << ", " << addresses[8] << endl;
 
 
 		}else{
