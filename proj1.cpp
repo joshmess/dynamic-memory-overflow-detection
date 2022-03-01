@@ -184,6 +184,16 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		lowerAddr = hex2Int(bufferBaseAddr);
 		upperAddr = lowerAddr + strlen(argv[i]) - 1;
 		
+		//pop the 5 random addresses
+		string toSave = fncStk.top();
+		fncStk.pop();
+		fncStk.pop();
+		fncStk.pop();
+		fncStk.pop();
+		fncStk.pop();
+		fncStk.pop();
+		fncStk.push(toSave);
+
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
@@ -410,7 +420,6 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		int num = 0;
 	
 		vector<string> stackTraceForTaintedByte = stackTraces[memAddrNum];
-		cout << "SIZE: " << stackTraceForTaintedByte.size();
 		for(int i=stackTraceForTaintedByte.size()-1;i>=0;i--){
 
 			cout << "Stack " << num << ": " << stackTraceForTaintedByte[i];
