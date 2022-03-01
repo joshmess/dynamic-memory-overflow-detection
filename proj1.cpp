@@ -417,7 +417,8 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
 
 		string stackTraceForTaintedByte = stackTraces[memAddrNum][0];
-		vector<string> addresses;
+		cout << "STR: " << stackTraceForTaintedByte << endl;
+		/*vector<string> addresses;
 		string token = strtok(stackTraceForTaintedByte, " ");
 			while(token != NULL){
 				addresses.push_back(token);
@@ -444,7 +445,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 
 		}
 
-		cout << "\n*********************************************************" << endl;
+		cout << "\n*********************************************************" << endl;*/
 		PIN_ExitProcess(1);
 	}
 	
