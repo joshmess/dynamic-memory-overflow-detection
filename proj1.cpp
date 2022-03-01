@@ -428,7 +428,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 	if(taintedBytes[memAddrNum] == 1){		//tainted byte used
 
 		string stackTraceForTaintedByte = stackTraces[memAddrNum][0];
-		cout << "STR: " << stackTraceForTaintedByte << endl;
+
 		string addresses[13];
 		int i = 0;
 		stringstream ssin(stackTraceForTaintedByte);
