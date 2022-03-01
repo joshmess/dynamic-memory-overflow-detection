@@ -418,7 +418,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 
 		string stackTraceForTaintedByte = stackTraces[memAddrNum][0];
 		vector<string> addresses;
-		char *token = strtok(stackTraceForTaintedByte, " ").c_str();
+		string = strtok(stackTraceForTaintedByte, " ");
 			while(token != NULL){
 				addresses.push_back(token);
 				token = strtok(NULL, " ");
