@@ -496,7 +496,7 @@ VOID functionCall(ADDRINT funcAddr){
 }
 
 // Return instruction pop stack
-VOID returnINS(ADDRINT fncAddr, ADDRINT target){
+VOID returnIns(ADDRINT fncAddr, ADDRINT target){
 
 	if(isMainExecutableIMG(fncAddr))
 	{
