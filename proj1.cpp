@@ -146,7 +146,7 @@ VOID fgetsHead(char* dest, int size, FILE *stream)
 		printf("fgetsHead: dest %p, size %d, stream: stdin)\n", dest, size);
 		fgets_stdin = true;
 		fgets_length = size;
-		fgetsFlag = True;
+		fgetsFlag = true;
 	} 
 }
 
