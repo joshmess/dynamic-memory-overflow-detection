@@ -432,7 +432,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		if(getsFlag){
 			
 			cout << "Stack 0: History of Mem(" <<memAddr << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[8] << ", " << addresses[10] << endl;
-			cout << "Stack 1: History of Mem(" <<int2Hex((memAddrNum+60)) << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << endl;
+			cout << "Stack 1: History of Mem(" <<int2Hex((memAddrNum+60)) << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << endl;
 
 
 		}else if(fgetsFlag){
@@ -442,7 +442,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 
 		}else{
 			cout << "Stack 0: History of Mem(" <<memAddr << "): " << addresses[0] << ", " << addresses[6] << ", " << addresses[7] << ", " << addresses[9] << endl;
-			cout << "Stack 1: History of Mem(" <<int2Hex((memAddrNum+60)) << addresses[0] << ", " << addresses[6] << endl;
+			cout << "Stack 1: History of Mem(" <<int2Hex((memAddrNum+60)) << "): " << addresses[0] << ", " << addresses[6] << endl;
 
 		}
 		cout << "*********************************************************" << endl;
