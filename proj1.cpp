@@ -418,12 +418,13 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 
 		string stackTraceForTaintedByte = stackTraces[memAddrNum][0];
 		cout << "STR: " << stackTraceForTaintedByte << endl;
-		/*vector<string> addresses;
-		string token = strtok(stackTraceForTaintedByte, " ");
-			while(token != NULL){
-				addresses.push_back(token);
-				token = strtok(NULL, " ");
-			}
+		string addresses[13];
+		int i = 0;
+		stringstream ssin(stackTraceForTaintedByte);
+		while (ssin.good() && i < 13){
+			ssin >> arr[i];
+			++i;
+		}
 		cout << "******************** Attack Detected ********************" << endl;
 		cout << "Indirect Branch("<<instAddr<<"): Jump to "<<targetAddr<<", stored in tainted byte(" << memAddr<<")"<< endl;
 		
@@ -445,7 +446,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 
 		}
 
-		cout << "\n*********************************************************" << endl;*/
+		cout << "\n*********************************************************" << endl;
 		PIN_ExitProcess(1);
 	}
 	
