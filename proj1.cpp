@@ -167,6 +167,7 @@ VOID getsTail(char* dest)
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
+	cout << "FNC: "<< fnc << endl;
 	// add fnc to stack
 	pushFncAddr(fnc);
 	unsigned int lowerAddr, upperAddr;
@@ -184,7 +185,6 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		addTaintedBytes(lowerAddr,upperAddr);
 		
 	}
-	cout << "MARKING trace at byte "<< int2Hex(lowerAddr+60);
 	stackTraces[lowerAddr+60] = getStackTrace();
 }
 
@@ -409,7 +409,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 		stack<string> functions;
 		for(unordered_map<unsigned int,string>::iterator i=stackTraces.begin();i!=stackTraces.end();i++){
 				string toPush = "";
-				toPush = ": History of Mem(" + int2Hex(i->first) + "):" + i->second + "\n";
+				toPush = ": History of Mem(" + int2Hex((i->first)+60) + "):" + i->second + "\n";
 				
 				functions.push(toPush);
 			
