@@ -184,15 +184,6 @@ VOID mainHead(int argc, char** argv, ADDRINT fnc)
 		lowerAddr = hex2Int(bufferBaseAddr);
 		upperAddr = lowerAddr + strlen(argv[i]) - 1;
 		
-		//pop the 5 random addresses
-		string toSave = fncStk.top();
-		fncStk.pop();
-		fncStk.pop();
-		fncStk.pop();
-		fncStk.pop();
-		fncStk.pop();
-		fncStk.pop();
-		fncStk.push(toSave);
 
 		addTaintedBytes(lowerAddr,upperAddr);
 		
@@ -426,7 +417,7 @@ VOID controlFlowHead(ADDRINT ins, ADDRINT addr, ADDRINT target)
 			num++;
 		}
 
-		cout << "*********************************************************" << endl;
+		cout << "\n*********************************************************" << endl;
 		PIN_ExitProcess(1);
 	}
 	
