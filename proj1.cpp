@@ -168,7 +168,7 @@ VOID getsTail(char* dest)
 VOID mainHead(int argc, char** argv, ADDRINT fnc)
 {
 
-	cout << "mainHead" << endl;
+	cout << "mainHead";
 	// add fnc to stack
 	pushFncAddr(fnc);
 	unsigned int lowerAddr, upperAddr;
@@ -452,7 +452,7 @@ VOID functionCall(ADDRINT funcAddr){
 
 	if(isMainExecutableIMG(funcAddr))
 	{
-		cout << "functionCall" << endl;
+		cout << "functionCall";
 		pushFncAddr(funcAddr);
 	}
 }
