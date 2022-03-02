@@ -29,4 +29,4 @@
 
 - Documented design.
 - Documented code testing.
-- Working on desig limitations.
+- Documented design limitations.
