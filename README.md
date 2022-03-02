@@ -31,12 +31,12 @@
 - Documented code testing.
 - Documented design limitations.
 
-#### Compile Project Code (From '~/proj1/'):
+#### Compile Project Code (From '/proj1/'):
 ```
 $ make
 ```
 
-#### Test Code on All Testcases (From '~/proj1/testcases/attacks' or '~/proj1/testcases/benign'):
+#### Test Code on All Testcases (From '/proj1/testcases/attacks' or '/proj1/testcases/benign'):
 ```
 $ ./run.sh
 ```
